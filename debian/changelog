@@ -1,4 +1,4 @@
-xserver-xorg-video-dummy (1:0.2.0-1) UNRELEASED; urgency=low
+xserver-xorg-video-dummy (1:0.2.0-1) experimental; urgency=low
 
   [ Andres Salomon ]
   * Test for obj-$(DEB_BUILD_GNU_TYPE) before creating it during build;
@@ -10,7 +10,7 @@ xserver-xorg-video-dummy (1:0.2.0-1) UNRELEASED; urgency=low
   * Bump dependency on xserver-xorg-core to >= 1:1.1.1. Do the same thing for
     the build-dep on xserver-xorg-dev.
 
- -- David Nusinow <dnusinow@debian.org>  Mon,  7 Aug 2006 20:09:15 +0000
+ -- David Nusinow <dnusinow@debian.org>  Mon,  7 Aug 2006 20:11:25 +0000
 
 xserver-xorg-video-dummy (1:0.1.0.5-2) unstable; urgency=low
 
