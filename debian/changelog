@@ -1,3 +1,10 @@
+xserver-xorg-video-dummy (1:0.2.0-5) experimental; urgency=low
+
+  * Minor updates from upstream
+  * Generate server dependencies automatically from the ABI
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 21 Feb 2007 22:54:21 -0500
+
 xserver-xorg-video-dummy (1:0.2.0-4) UNRELEASED; urgency=low
 
   * Add link to xserver-xorg-core bug script, so that bugreports contain
