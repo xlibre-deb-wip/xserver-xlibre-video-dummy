@@ -5,6 +5,7 @@ xserver-xorg-video-dummy (1:0.3.8-2) UNRELEASED; urgency=medium
   * Remove Cyril from Uploaders.
   * Bump policy to 4.6.0.
   * control: Update Vcs urls.
+  * Update README.source for salsa.
 
  -- Timo Aaltonen <timo.aaltonen@canonical.com>  Tue, 14 Apr 2020 19:36:48 +0300
 
