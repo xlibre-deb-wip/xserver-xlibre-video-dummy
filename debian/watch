@@ -1,4 +1,4 @@
-#git=git://anongit.freedesktop.org/xorg/driver/xf86-video-dummy
+#git=https://gitlab.freedesktop.org/xorg/driver/xf86-video-dummy.git
 version=4
 opts=pgpsigurlmangle=s/$/.sig/ \
 https://xorg.freedesktop.org/releases/individual/driver/ xf86-video-dummy-(.*)\.tar\.gz
