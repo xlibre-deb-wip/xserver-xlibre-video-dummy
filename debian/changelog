@@ -1,9 +1,12 @@
-xserver-xorg-video-dummy (1:0.4.0-1) UNRELEASED; urgency=medium
+xserver-xorg-video-dummy (1:0.4.0-1) unstable; urgency=medium
 
   * New upstream release.
+    - add XRANDR support
+    - changeable physical output size
+    - support 30bit depth
   * Update signing-key.asc.
 
- -- Timo Aaltonen <tjaalton@debian.org>  Fri, 08 Apr 2022 07:07:13 +0300
+ -- Timo Aaltonen <tjaalton@debian.org>  Fri, 08 Apr 2022 07:13:07 +0300
 
 xserver-xorg-video-dummy (1:0.3.8-2) unstable; urgency=medium
 
