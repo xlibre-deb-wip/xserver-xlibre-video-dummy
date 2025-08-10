@@ -23,13 +23,13 @@ Depends:
 Provides:
  xserver-xorg-video-dummy,
  ${xviddriver:Provides}
-Description: X.Org X server -- dummy display driver
+Description: XLibre X server -- dummy display driver
  This package provides a 'dummy' display driver, which does not actually
  display anything.
  .
- More information about X.Org can be found at:
- <URL:https://www.X.org>
+ More information about XLibre can be found at:
+ <URL:https://www.github.com/X11Libre/xserver>
  .
- This package is built from the X.org xf86-video-dummy driver module.
+ This package is built from the XLibre xf86-video-dummy driver module.
 Conflicts:
  xserver-xorg-video-dummy,
