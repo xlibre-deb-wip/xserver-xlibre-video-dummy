@@ -11,8 +11,6 @@
 #endif
 #include <string.h>
 
-#include "compat-api.h"
-
 #define DUMMY_MAX_SCREENS 16
 
 /* Supported chipsets */
@@ -22,8 +20,8 @@ typedef enum {
 
 /* function prototypes */
 
-extern Bool DUMMYSwitchMode(SWITCH_MODE_ARGS_DECL);
-extern void DUMMYAdjustFrame(ADJUST_FRAME_ARGS_DECL);
+extern Bool DUMMYSwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode);
+extern void DUMMYAdjustFrame(ScrnInfoPtr pScrn, int x, int y);
 
 /* in dummy_cursor.c */
 extern Bool DUMMYCursorInit(ScreenPtr pScrn);
@@ -52,7 +50,7 @@ typedef struct dummyRec
     int cursorFG, cursorBG;
 
     dummy_colors colors[1024];
-    Bool        (*CreateWindow)() ;     /* wrapped CreateWindow */
+    Bool        (*CreateWindow)(WindowPtr) ;     /* wrapped CreateWindow */
     Bool prop;
     /* XRANDR support begin */
     int num_screens;

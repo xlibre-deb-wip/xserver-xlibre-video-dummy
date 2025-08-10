@@ -23,8 +23,8 @@
 # Initialize Autoconf
 AC_PREREQ([2.60])
 AC_INIT([xf86-video-dummy],
-        [0.4.0],
-        [https://gitlab.freedesktop.org/xorg/driver/xf86-video-dummy/issues],
+        [0.4.1],
+        [https://gitlab.freedesktop.org/xorg/driver/xf86-video-dummy/-/issues],
         [xf86-video-dummy])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS([config.h])
@@ -40,8 +40,7 @@ XORG_MACROS_VERSION(1.3)
 XORG_DEFAULT_OPTIONS
 
 # Initialize libtool
-AC_DISABLE_STATIC
-AC_PROG_LIBTOOL
+LT_INIT([disable-static])
 
 AH_TOP([#include "xorg-server.h"])
 
@@ -57,7 +56,7 @@ XORG_DRIVER_CHECK_EXT(RANDR, randrproto)
 XORG_DRIVER_CHECK_EXT(RENDER, renderproto)
 
 # Obtain compiler/linker options for the driver dependencies
-PKG_CHECK_MODULES(XORG, [xorg-server >= 1.4.99.901] xproto fontsproto $REQUIRED_MODULES)
+PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18] xproto fontsproto $REQUIRED_MODULES)
 
 # Checks for libraries.
 
