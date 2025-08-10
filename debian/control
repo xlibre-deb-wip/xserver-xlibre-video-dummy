@@ -1,25 +1,27 @@
-Source: xserver-xorg-video-dummy
+Source: xserver-xlibre-video-dummy
 Section: x11
 Priority: optional
-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+Maintainer: apebl <a@pebl.cc>
 Build-Depends:
  debhelper-compat (= 13),
  quilt,
  pkg-config,
- xserver-xorg-dev (>= 2:21.1),
+ xserver-xlibre-dev (>= 2:21.1),
  x11proto-dev,
  xutils-dev
 Standards-Version: 4.6.0
-Vcs-Git: https://salsa.debian.org/xorg-team/driver/xserver-xorg-video-dummy.git
-Vcs-Browser: https://salsa.debian.org/xorg-team/driver/xserver-xorg-video-dummy
+Vcs-Git: https://github.com/xlibre-deb/xserver-xlibre-video-dummy.git
+Vcs-Browser: https://github.com/xlibre-deb/xserver-xlibre-video-dummy
+Homepage: https://github.com/X11Libre
 
-Package: xserver-xorg-video-dummy
+Package: xserver-xlibre-video-dummy
 Architecture: any
 Depends:
  ${shlibs:Depends},
  ${misc:Depends},
  ${xviddriver:Depends},
 Provides:
+ xserver-xorg-video-dummy,
  ${xviddriver:Provides}
 Description: X.Org X server -- dummy display driver
  This package provides a 'dummy' display driver, which does not actually
@@ -29,3 +31,5 @@ Description: X.Org X server -- dummy display driver
  <URL:https://www.X.org>
  .
  This package is built from the X.org xf86-video-dummy driver module.
+Conflicts:
+ xserver-xorg-video-dummy,
