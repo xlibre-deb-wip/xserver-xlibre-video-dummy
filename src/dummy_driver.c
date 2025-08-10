@@ -47,13 +47,13 @@ static const OptionInfoRec *	DUMMYAvailableOptions(int chipid, int busid);
 static void     DUMMYIdentify(int flags);
 static Bool     DUMMYProbe(DriverPtr drv, int flags);
 static Bool     DUMMYPreInit(ScrnInfoPtr pScrn, int flags);
-static Bool     DUMMYScreenInit(SCREEN_INIT_ARGS_DECL);
-static Bool     DUMMYEnterVT(VT_FUNC_ARGS_DECL);
-static void     DUMMYLeaveVT(VT_FUNC_ARGS_DECL);
-static Bool     DUMMYCloseScreen(CLOSE_SCREEN_ARGS_DECL);
+static Bool     DUMMYScreenInit(ScreenPtr pScreen, int argc, char **argv);
+static Bool     DUMMYEnterVT(ScrnInfoPtr pScrn);
+static void     DUMMYLeaveVT(ScrnInfoPtr pScrn);
+static Bool     DUMMYCloseScreen(ScreenPtr pScreen);
 static Bool     DUMMYCreateWindow(WindowPtr pWin);
-static void     DUMMYFreeScreen(FREE_SCREEN_ARGS_DECL);
-static ModeStatus DUMMYValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode,
+static void     DUMMYFreeScreen(ScrnInfoPtr pScrn);
+static ModeStatus DUMMYValidMode(ScrnInfoPtr pScrn, DisplayModePtr mode,
                                  Bool verbose, int flags);
 static Bool	DUMMYSaveScreen(ScreenPtr pScreen, int mode);
 
@@ -243,7 +243,7 @@ dummy_output_mode_set (xf86OutputPtr output, DisplayModePtr mode,
         DisplayModePtr adjusted_mode)
 {
     DUMMYPtr dPtr = DUMMYPTR(output->scrn);
-    int index = (int64_t)output->driver_private;
+    uintptr_t index = (uintptr_t)output->driver_private;
 
     /* set to connected at first mode set */
     dPtr->connected_outputs |= 1 << index;
@@ -255,7 +255,7 @@ static xf86OutputStatus
 dummy_output_detect (xf86OutputPtr output)
 {
     DUMMYPtr dPtr = DUMMYPTR(output->scrn);
-    int index = (int64_t)output->driver_private;
+    uintptr_t index = (uintptr_t)output->driver_private;
 
     if (dPtr->connected_outputs & (1 << index))
         return XF86OutputStatusConnected;
@@ -271,7 +271,7 @@ dummy_output_get_modes (xf86OutputPtr output)
     /* copy modes from config */
     for (pModeSrc = output->scrn->modes; pModeSrc; pModeSrc = pModeSrc->next)
     {
-            pMode = xnfcalloc(1, sizeof(DisplayModeRec));
+            pMode = XNFcallocarray(1, sizeof(DisplayModeRec));
             memcpy(pMode, pModeSrc, sizeof(DisplayModeRec));
             pMode->next = NULL;
             pMode->prev = NULL;
@@ -283,7 +283,8 @@ dummy_output_get_modes (xf86OutputPtr output)
     return pModes;
 }
 
-void dummy_output_register_prop(xf86OutputPtr output, Atom prop, uint64_t value)
+static void
+dummy_output_register_prop(xf86OutputPtr output, Atom prop, uint64_t value)
 {
     INT32 dims_range[2] = { 0, 65535 };
     int err;
@@ -301,7 +302,8 @@ void dummy_output_register_prop(xf86OutputPtr output, Atom prop, uint64_t value)
                 "RRChangeOutputProperty error, %d\n", err);
 }
 
-void dummy_output_create_resources(xf86OutputPtr output)
+static void
+dummy_output_create_resources(xf86OutputPtr output)
 {
     if (!ValidAtom(width_mm_atom))
         width_mm_atom = MakeAtom(WIDTH_MM_NAME, strlen(WIDTH_MM_NAME), 1);
@@ -369,7 +371,6 @@ Bool DUMMYAdjustScreenPixmap(ScrnInfoPtr pScrn, int width, int height)
 {
     ScreenPtr pScreen = pScrn->pScreen;
     PixmapPtr pPixmap = pScreen->GetScreenPixmap(pScreen);
-    DUMMYPtr dPtr = DUMMYPTR(pScrn);
     uint64_t cbLine = (width * xf86GetBppFromDepth(pScrn, pScrn->depth) / 8 + 3) & ~3;
     int displayWidth = cbLine * 8 / xf86GetBppFromDepth(pScrn, pScrn->depth);
 
@@ -447,7 +448,7 @@ DUMMYGetRec(ScrnInfoPtr pScrn)
     if (pScrn->driverPrivate != NULL)
 	return TRUE;
 
-    pScrn->driverPrivate = xnfcalloc(sizeof(DUMMYRec), 1);
+    pScrn->driverPrivate = XNFcallocarray(sizeof(DUMMYRec), 1);
 
     if (pScrn->driverPrivate == NULL)
 	return FALSE;
@@ -650,7 +651,7 @@ DUMMYPreInit(ScrnInfoPtr pScrn, int flags)
      * Setup the ClockRanges, which describe what clock ranges are available,
      * and what sort of modes they can be used for.
      */
-    clockRanges = (ClockRangePtr)xnfcalloc(sizeof(ClockRange), 1);
+    clockRanges = (ClockRangePtr)XNFcallocarray(sizeof(ClockRange), 1);
     clockRanges->next = NULL;
     clockRanges->ClockMulFactor = 1;
     clockRanges->minClock = 11000;   /* guessed §§§ */
@@ -722,14 +723,14 @@ DUMMYPreInit(ScrnInfoPtr pScrn, int flags)
 
 /* Mandatory */
 static Bool
-DUMMYEnterVT(VT_FUNC_ARGS_DECL)
+DUMMYEnterVT(ScrnInfoPtr pScrn)
 {
     return TRUE;
 }
 
 /* Mandatory */
 static void
-DUMMYLeaveVT(VT_FUNC_ARGS_DECL)
+DUMMYLeaveVT(ScrnInfoPtr pScrn)
 {
 }
 
@@ -770,7 +771,7 @@ static ScrnInfoPtr DUMMYScrn; /* static-globalize it */
 
 /* Mandatory */
 static Bool
-DUMMYScreenInit(SCREEN_INIT_ARGS_DECL)
+DUMMYScreenInit(ScreenPtr pScreen, int argc, char **argv)
 {
     ScrnInfoPtr pScrn;
     DUMMYPtr dPtr;
@@ -798,11 +799,16 @@ DUMMYScreenInit(SCREEN_INIT_ARGS_DECL)
     /* Setup the visuals we support. */
     
     if (!miSetVisualTypes(pScrn->depth,
-      		      miGetDefaultVisualMask(pScrn->depth),
-		      pScrn->rgbBits, pScrn->defaultVisual))
-         return FALSE;
+                          miGetDefaultVisualMask(pScrn->depth),
+                          pScrn->rgbBits, pScrn->defaultVisual)) {
+        free(pixels);
+        return FALSE;
+    }
 
-    if (!miSetPixmapDepths ()) return FALSE;
+    if (!miSetPixmapDepths ()) {
+        free(pixels);
+        return FALSE;
+    }
 
     /*
      * Call the framebuffer layer's ScreenInit function, and fill in other
@@ -952,20 +958,20 @@ DUMMYScreenInit(SCREEN_INIT_ARGS_DECL)
 
 /* Mandatory */
 Bool
-DUMMYSwitchMode(SWITCH_MODE_ARGS_DECL)
+DUMMYSwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
     return TRUE;
 }
 
 /* Mandatory */
 void
-DUMMYAdjustFrame(ADJUST_FRAME_ARGS_DECL)
+DUMMYAdjustFrame(ScrnInfoPtr pScrn, int x, int y)
 {
 }
 
 /* Mandatory */
 static Bool
-DUMMYCloseScreen(CLOSE_SCREEN_ARGS_DECL)
+DUMMYCloseScreen(ScreenPtr pScreen)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     DUMMYPtr dPtr = DUMMYPTR(pScrn);
@@ -977,14 +983,13 @@ DUMMYCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 
     pScrn->vtSema = FALSE;
     pScreen->CloseScreen = dPtr->CloseScreen;
-    return (*pScreen->CloseScreen)(CLOSE_SCREEN_ARGS);
+    return (*pScreen->CloseScreen)(pScreen);
 }
 
 /* Optional */
 static void
-DUMMYFreeScreen(FREE_SCREEN_ARGS_DECL)
+DUMMYFreeScreen(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
     DUMMYFreeRec(pScrn);
 }
 
@@ -996,7 +1001,7 @@ DUMMYSaveScreen(ScreenPtr pScreen, int mode)
 
 /* Optional */
 static ModeStatus
-DUMMYValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags)
+DUMMYValidMode(ScrnInfoPtr pScrn, DisplayModePtr mode, Bool verbose, int flags)
 {
     return(MODE_OK);
 }
@@ -1021,11 +1026,8 @@ DUMMYCreateWindow(WindowPtr pWin)
 	return(ret);
 	
     if(dPtr->prop == FALSE) {
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 8
-        pWinRoot = WindowTable[DUMMYScrn->pScreen->myNum];
-#else
         pWinRoot = DUMMYScrn->pScreen->root;
-#endif
+
         if (! ValidAtom(VFB_PROP))
             VFB_PROP = MakeAtom(VFB_PROP_NAME, strlen(VFB_PROP_NAME), 1);
 
