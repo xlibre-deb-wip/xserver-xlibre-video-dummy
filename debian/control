@@ -21,7 +21,7 @@ Depends:
  ${misc:Depends},
  ${xviddriver:Depends},
 Provides:
- xserver-xorg-video-dummy,
+ xserver-xorg-video-dummy (= ${binary:Version}),
  ${xviddriver:Provides}
 Description: XLibre X server -- dummy display driver
  This package provides a 'dummy' display driver, which does not actually
